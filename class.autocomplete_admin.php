@@ -17,13 +17,6 @@ class AutoComplete_Admin {
 	}
 
 	public static function init_hooks() {
-		// The standalone stats page was removed in 3.0 for an all-in-one config and stats page.
-		// Redirect any links that might have been bookmarked or in browser history.
-		if ( isset( $_GET['page'] ) && 'autocomplete-stats-display' == $_GET['page'] ) {
-			wp_safe_redirect( esc_url_raw( self::get_page_url( 'stats' ) ), 301 );
-			die;
-		}
-
 		self::$initiated = true;
 
 		add_action( 'admin_init', array( 'AutoComplete_Admin', 'admin_init' ) );
@@ -42,7 +35,7 @@ class AutoComplete_Admin {
 		if ( get_option( 'activated_autocomplete' ) ) {
 			delete_option( 'activated_autocomplete' );
 			if ( ! headers_sent() ) {
-				//wp_redirect( add_query_arg( array( 'page' => 'autocomplete-key-config', 'view' => 'start' ) ) );
+				wp_redirect( add_query_arg( array( 'page' => 'autocomplete-key-config', 'view' => 'start' ) ) );
 			}
 		}
 
@@ -333,14 +326,11 @@ class AutoComplete_Admin {
 
 		$args = array( 'page' => 'autocomplete-key-config' );
 
-		if ( $page == 'stats' )
-			$args = array( 'page' => 'autocomplete-key-config', 'view' => 'stats' );
-		elseif ( $page == 'delete_key' )
-			$args = array( 'page' => 'autocomplete-key-config', 'view' => 'start', 'action' => 'delete-key', '_wpnonce' => wp_create_nonce( self::NONCE ) );
+		if ( $page == 'delete_key' ) {
+            $args = array('page' => 'autocomplete-key-config', 'view' => 'start', 'action' => 'delete-key', '_wpnonce' => wp_create_nonce(self::NONCE));
+        }
 
-		$url = add_query_arg( $args, class_exists( 'Jetpack' ) ? admin_url( 'admin.php' ) : admin_url( 'options-general.php' ) );
-
-		return $url;
+		return add_query_arg( $args, class_exists( 'Jetpack' ) ? admin_url( 'admin.php' ) : admin_url( 'options-general.php' ) );
 	}
 
 	public static function display_alert() {
@@ -377,9 +367,7 @@ class AutoComplete_Admin {
 			return;
 		}
 
-		$autocomplete_user = false;
-
-		AutoComplete::view( 'start', compact( 'autocomplete_user' ) );
+		AutoComplete::view( 'start', array('notices' => self::$notices));
 
 		/*
 		// To see all variants when testing.
@@ -398,7 +386,7 @@ class AutoComplete_Admin {
 	public static function display_configuration_page() {
 		$api_key = AutoComplete::get_api_key();
 
-		AutoComplete::view( 'config', compact( 'api_key' ) );
+		AutoComplete::view( 'config', ['api_key' => $api_key, 'notices' => self::$notices]);
 	}
 
 	public static function display_notice() {

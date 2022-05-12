@@ -42,6 +42,7 @@ define( 'AUTOCOMPLETE_VERSION', '1.0.0'.time() );
 define( 'AUTOCOMPLETE_MINIMUM_WP_VERSION', '5.0' );
 define( 'AUTOCOMPLETE_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AUTOCOMPLETE_URL', 'https://autocomplete.sh');
+define( 'AUTOCOMPLETE_URL_API', 'https://api.autocomplete.sh/v1');
 define( 'AUTOCOMPLETE_EMAIL_SUPPORT', 'help@autocomplete.sh');
 
 require_once(AUTOCOMPLETE_PLUGIN_DIR . 'helpers.php');

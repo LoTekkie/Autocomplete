@@ -11,7 +11,7 @@
 		<?php } ?>
 		<?php if ( ! empty( $notices ) ) { ?>
 			<?php foreach ( $notices as $notice ) { ?>
-				<?php AutoComplete::view( 'notice', $notice ); ?>
+				<?php AutoComplete::view( 'notice', ['type' => $notice] ); ?>
 			<?php } ?>
 		<?php } ?>
 
@@ -24,14 +24,13 @@
 
       <div class="inside">
         <form action="<?php echo esc_url( AutoComplete_Admin::get_page_url() ); ?>" method="POST">
-          <table cellspacing="0" class="autocomplete-settings">
+          <table cellspacing="0" class="autocomplete-settings" style="margin:0;width:100%;">
             <tbody>
               <?php if ( ! AutoComplete::predefined_api_key() ) { ?>
-              <tr>
-                <th class="autocomplete-api-key" width="10%" align="left" scope="row"><?php esc_html_e('API Key', 'autocomplete');?></th>
-                <td width="5%"/>
+              <tr class="autocomplete-api-key">
                 <td align="left">
-                  <span class="api-key"><input id="key" name="key" type="text" size="15" value="<?php echo esc_attr( get_option('autocomplete_api_key') ); ?>" class="<?php echo esc_attr( 'regular-text code ' . $autocomplete_user->status ); ?>"></span>
+                    <span for="key" style="font-size:1.2em;position:relative;bottom:10px;"><?php esc_html_e('API Key', 'autocomplete');?></span>
+                    <span class="api-key full-max-width" style="margin-top:10px;"><input id="key" name="key" type="text" size="15" value="<?php echo esc_attr( get_option('autocomplete_api_key') ); ?>" style="width:100%;"></span>
                 </td>
               </tr>
               <?php } ?>

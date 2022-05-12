@@ -37,13 +37,21 @@ class Autocomplete
 
     public static function check_key_status($key, $ip = null)
     {
-        //TODO: we can either ping server or add some sensible checks here
-        return true;
+        $response = self::api_call('account', 'GET', '', $key);
+
+        if ($response && $response[1]) {
+          if (is_string($response[1])) {
+            $response[1] = json_decode($response[1], true);
+          }
+        } else {
+          return false;
+        }
+
+        return is_array($response[1]) && array_key_exists( 'status', $response[1]) && $response[1]['status'] == 200;
     }
 
     public static function verify_key($key, $ip = null)
     {
-      //TODO: wrapped for futher processing if needed as this may be a request returned
         return self::check_key_status($key, $ip) ? 'valid' : 'invalid';
     }
 
@@ -105,33 +113,34 @@ class Autocomplete
     }
 
     /**
-     * Make a POST request to the Autocomplete API.
+     * * Make a request to the Autocomplete API.
      * https://autocomplete.sh/documentation#api-access
-     *
-     * @param string $request The body of the request.
-     * @param string $path The path for the request.
-     * @return array A two-member array consisting of the headers and the response body, both empty in the case of a failure.
+     * @param $path
+     * @param string $method
+     * @param string $request_body
+     * @param null $key
+     * @return array
      */
-    public static function http_post($request, $path)
+    public static function api_call($path, $method='POST', $request_body='', $key=null)
     {
-        $content_length = strlen($request);
-
-        $api_key = self::get_api_key();
+        $api_key = $key ?? self::get_api_key();
 
         $http_args = array(
-            'body' => $request,
             'headers' => array(
-                'Content-Type' => 'application/x-www-form-urlencoded; charset=' . get_option('blog_charset'),
-                'Host' => constant('AUTOCOMPLETE_URL'),
                 'Authorization' => 'Bearer ' . $api_key
             ),
             'httpversion' => '1.0',
             'timeout' => 15
         );
 
-        $autocomplete_url = autocomplete_url("v1/engines/{$path}");
+        $autocomplete_api_url = autocomplete_url($path, true);
 
-        $response = wp_remote_post($autocomplete_url, $http_args);
+        if(strtoupper($method) == 'POST') {
+            $http_args['body'] = $request_body;
+            $response = wp_remote_post($autocomplete_api_url, $http_args);
+        } else {
+            $response = wp_remote_get($autocomplete_api_url, $http_args);
+        }
 
         AutoComplete::log(compact('autocomplete_url', 'http_args', 'response'));
 
@@ -140,7 +149,7 @@ class Autocomplete
             return array('', '');
         }
 
-        return array($response['headers'], $response['body']);
+        return array($response['headers'], $response['body'], true);
     }
 
     private static function bail_on_activation($message, $deactivate = true)

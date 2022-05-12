@@ -101,7 +101,7 @@
 	
 	?>
 <div class="autocomplete-alert autocomplete-active">
-	<h3 class="autocomplete-key-status"><?php esc_html_e( 'autocomplete is now protecting your site from spam. Happy blogging!', 'autocomplete' ); ?></h3>
+	<h3 class="autocomplete-key-status"><?php esc_html_e( 'AutoComplete.sh is now ready. Happy blogging!', 'autocomplete' ); ?></h3>
 	<?php if ( $check_pending_link ) { ?>
 		<p class="autocomplete-description"><?php printf( __( 'Would you like to <a href="%s">check pending comments</a>?', 'autocomplete' ), esc_url( $check_pending_link ) ); ?></p>
 	<?php } ?>
