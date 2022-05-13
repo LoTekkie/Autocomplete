@@ -3,7 +3,6 @@
 class Autocomplete
 {
     private static $initiated = false;
-    private static $notices   = array();
 
     public static function init()
     {
@@ -20,7 +19,6 @@ class Autocomplete
         AutoComplete_Metabox::make();
         self::$initiated = true;
     }
-
 
     public static function predefined_api_key() {
         if ( defined( 'AUTOCOMPLETE_API_KEY' ) ) {
@@ -40,11 +38,11 @@ class Autocomplete
         $response = self::api_call('account', 'GET', '', $key);
 
         if ($response && $response[1]) {
-          if (is_string($response[1])) {
-            $response[1] = json_decode($response[1], true);
-          }
+            if (is_string($response[1])) {
+                $response[1] = json_decode($response[1], true);
+            }
         } else {
-          return false;
+            return false;
         }
 
         return is_array($response[1]) && array_key_exists( 'status', $response[1]) && $response[1]['status'] == 200;

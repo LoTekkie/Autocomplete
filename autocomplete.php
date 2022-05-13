@@ -3,9 +3,9 @@
  * @package autocomplete
  */
 /*
-Plugin Name:  AutoComplete.sh
+Plugin Name:  AutoComplete
 Plugin URI:   https://www.autocomplete.sh
-Description:  Auto-complete your blog posts, so you can focus on more important things.
+Description:  Make your Blog Posts intelligent with AutoComplete's NLP text generation API.
 Version:      1.0
 Author:       Sjshovan
 Author URI:   https://github.com/lotekkie
@@ -34,12 +34,13 @@ Copyright 2022 Sjshovan.
 
 // Make sure we don't expose any info if called directly
 if ( !function_exists( 'add_action' ) ) {
-	echo 'This plugin cannot be called directly';
-	exit;
+    echo 'This plugin cannot be called directly';
+    exit;
 }
 
-define( 'AUTOCOMPLETE_VERSION', '1.0.0'.time() );
+define( 'AUTOCOMPLETE_VERSION', '1.0.0-'.time() );
 define( 'AUTOCOMPLETE_MINIMUM_WP_VERSION', '5.0' );
+define( 'AUTOCOMPLETE_DESCRIPTION', 'Make your Blog Posts intelligent with AutoComplete\'s NLP text generation API');
 define( 'AUTOCOMPLETE_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AUTOCOMPLETE_URL', 'https://autocomplete.sh');
 define( 'AUTOCOMPLETE_URL_API', 'https://api.autocomplete.sh/v1');
@@ -56,6 +57,6 @@ require_once( AUTOCOMPLETE_PLUGIN_DIR . 'class.autocomplete_metabox.php' );
 add_action( 'init', array( 'autocomplete', 'init' ) );
 
 if ( is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
-	require_once( AUTOCOMPLETE_PLUGIN_DIR . 'class.autocomplete_admin.php' );
-	add_action( 'init', array( 'AutoComplete_Admin', 'init' ) );
+    require_once( AUTOCOMPLETE_PLUGIN_DIR . 'class.autocomplete_admin.php' );
+    add_action( 'init', array( 'AutoComplete_Admin', 'init' ) );
 }

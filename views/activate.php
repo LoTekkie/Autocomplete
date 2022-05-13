@@ -1,8 +1,8 @@
 <div class="autocomplete-box">
-	<?php AutoComplete::view( 'title' ); ?>
-	<?php AutoComplete::view( 'setup' );?>
+    <?php AutoComplete::view( 'title' ); ?>
+    <?php AutoComplete::view( 'setup' );?>
 </div>
 <br/>
 <div class="autocomplete-box">
-	<?php AutoComplete::view( 'enter' );?>
+    <?php AutoComplete::view( 'enter' );?>
 </div>

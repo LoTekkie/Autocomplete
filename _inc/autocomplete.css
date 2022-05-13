@@ -358,9 +358,12 @@ table.comments td.comment p a:after {
 }
 
 .autocomplete-masthead {
-	background-color:#fff;
-	text-align:center;
-	box-shadow:0 1px 0 rgba(200,215,225,0.5),0 1px 2px #e9eff3
+    background: transparent;
+    min-height: 66px;
+    width: 100%;
+	text-align: center;
+    background: url(./img/herobg.webp) no-repeat, linear-gradient(-281.11deg, rgb(39 56 211) 0%, rgb(78 22 169) 95%);
+    box-shadow: 0 1em 2em -.5em rgba(0, 0, 0, 0.15);
 }
 @media (max-width: 45rem) {
 	.autocomplete-masthead {
@@ -464,13 +467,14 @@ table.comments td.comment p a:after {
 }
 
 .autocomplete-card {
-	margin-top: 1rem;
-	margin-bottom: 0;
 	position: relative;
-	margin: 0 auto 0.625rem auto;
 	box-sizing: border-box;
 	background: white;
 	box-shadow: 0 0 0 1px rgba(200, 215, 225, 0.5), 0 1px 2px #e9eff3;
+	border: 1px solid rgba(200, 215, 225, 0.5);
+	border-radius: 7px;
+	color: rgb(40, 47, 83) !important;
+	font-weight: 500 !important;
 }
 
 .autocomplete-card:after, .autocomplete-card .inside:after, .autocomplete-masthead__logo-container:after {
@@ -503,6 +507,9 @@ table.comments td.comment p a:after {
 	box-sizing: border-box;
 	background: white;
 	border: 1px solid rgba(200, 215, 225, 0.5);
+	border-radius: 7px;
+	color: rgb(40, 47, 83) !important;
+	font-weight: 500 !important;
 }
 
 .autocomplete-box h2, .autocomplete-box h3 {
@@ -512,6 +519,7 @@ table.comments td.comment p a:after {
 
 .autocomplete-box p {
 	padding: 0 1.5rem 1.5rem 1.5rem;
+	font-size: 15px;
 	margin: 0;
 }
 
@@ -591,11 +599,11 @@ table.comments td.comment p a:after {
 }
 
 .autocomplete-button, .autocomplete-button:hover, .autocomplete-button:visited {
-	background: white;
+
 	border-color: #c8d7e1;
 	border-style: solid;
 	border-width: 1px 1px 2px;
-	color: #2e4453;
+
 	cursor: pointer;
 	display: inline-block;
 	margin: 0;
@@ -609,11 +617,13 @@ table.comments td.comment p a:after {
 	box-sizing: border-box;
 	font-size: 14px;
 	line-height: 21px;
-	border-radius: 4px;
+	border-radius: 5px;
 	padding: 7px 14px 9px;
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
+	color: #fff;
+	background: #3a28bf;
 }
 
 .autocomplete-button:hover {
@@ -670,6 +680,7 @@ table.comments td.comment p a:after {
 
 .autocomplete-setup-instructions {
 	text-align: center;
+	font-size: 1.2em;
 }
 
 .autocomplete-setup-instructions form {
@@ -737,6 +748,20 @@ div.error.autocomplete-usage-limit-alert {
 
 #autocomplete-logo-text {
     font-family: var(--mono-font);
-    font-weight: 700;
     font-size: 1.5em;
+	font-weight: 500;
+    margin: 0 10px;
+    color: #fff;
+	text-decoration: none;
+	outline: none;
+}
+
+#autocomplete-pitch-copy {
+	background: linear-gradient(90deg, rgba(0, 0, 0, 0) 10%, rgb(33 33 33 / 17%) 100%);
+    padding: 40px 14px;
+    border-radius: 50px;
+    min-width: 400px;
+    width: 500px;
+    max-width: 700px;
+    margin: auto;
 }
