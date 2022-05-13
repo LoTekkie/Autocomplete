@@ -41,7 +41,7 @@
   </div>
 <?php elseif ( $type == 'new-key-valid' ) : ?>
   <div class="autocomplete-alert autocomplete-active">
-    <h3 class="autocomplete-key-status"><?php esc_html_e( 'AutoComplete is now ready. Happy blogging!', 'autocomplete' ); ?></h3>
+    <h3 class="autocomplete-key-status"><?php esc_html_e( 'AutoComplete is now ready. Scroll down to see how to get started. Happy blogging!', 'autocomplete' ); ?></h3>
   </div>
 <?php elseif ( $type == 'new-key-invalid' ) : ?>
   <div class="autocomplete-alert autocomplete-critical">
@@ -92,5 +92,9 @@
 
         ?>
     </p>
+  </div>
+<?php elseif ( $type == 'account-details-failed' ) : ?>
+  <div class="autocomplete-alert autocomplete-critical">
+    <h3 class="autocomplete-key-status"><?php esc_html_e( 'Unable to fetch account details. Please double-check your API Key and ensure the service is available.' , 'autocomplete'); ?></h3>
   </div>
 <?php endif; ?>

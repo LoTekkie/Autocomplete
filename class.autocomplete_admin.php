@@ -17,18 +17,15 @@ class AutoComplete_Admin {
     }
 
     public static function init_hooks() {
-        self::$initiated = true;
-
         add_action( 'admin_init', array( 'AutoComplete_Admin', 'admin_init' ) );
         add_action( 'admin_menu', array( 'AutoComplete_Admin', 'admin_menu' ), 5 );
         add_action( 'admin_notices', array( 'AutoComplete_Admin', 'display_notice' ) );
         add_action( 'admin_enqueue_scripts', array( 'AutoComplete_Admin', 'load_resources' ) );
-
         add_filter( 'plugin_action_links', array( 'AutoComplete_Admin', 'plugin_action_links' ), 10, 2 );
-
         add_filter( 'plugin_action_links_'.plugin_basename( plugin_dir_path( __FILE__ ) . 'autocomplete.php'), array( 'AutoComplete_Admin', 'admin_plugin_settings_link' ) );
-
         add_filter( 'all_plugins', array( 'AutoComplete_Admin', 'modify_plugin_description' ) );
+
+        self::$initiated = true;
     }
 
     public static function admin_init() {
@@ -204,45 +201,6 @@ class AutoComplete_Admin {
         }
     }
 
-    public static function recheck_queue_portion( $start = 0, $limit = 100 ) {
-        global $wpdb;
-
-        $paginate = '';
-
-        if ( $limit <= 0 ) {
-            $limit = 100;
-        }
-
-        if ( $start < 0 ) {
-            $start = 0;
-        }
-
-        $moderation = $wpdb->get_col( $wpdb->prepare( "SELECT * FROM {$wpdb->comments} WHERE comment_approved = '0' LIMIT %d OFFSET %d", $limit, $start ) );
-
-        $result_counts = array(
-            'processed' => count( $moderation ),
-            'spam' => 0,
-            'ham' => 0,
-            'error' => 0,
-        );
-
-        foreach ( $moderation as $comment_id ) {
-            $api_response = AutoComplete::recheck_comment( $comment_id, 'recheck_queue' );
-
-            if ( 'true' === $api_response ) {
-                ++$result_counts['spam'];
-            }
-            elseif ( 'false' === $api_response ) {
-                ++$result_counts['ham'];
-            }
-            else {
-                ++$result_counts['error'];
-            }
-        }
-
-        return $result_counts;
-    }
-
     public static function plugin_action_links( $links, $file ) {
         if ( $file == plugin_basename( plugin_dir_url( __FILE__ ) . '/autocomplete.php' ) ) {
             $links[] = '<a href="' . esc_url( self::get_page_url() ) . '">'.esc_html__( 'Settings' , 'autocomplete').'</a>';
@@ -260,7 +218,7 @@ class AutoComplete_Admin {
         // Some web hosts may disable this function
         if ( function_exists('gethostbynamel') ) {
 
-            $ips = gethostbynamel( 'rest.autocomplete.com' );
+            $ips = gethostbynamel( constant("AUTOCOMPLETE_URL_API"));
             if ( $ips && is_array($ips) && count($ips) ) {
                 $api_key = AutoComplete::get_api_key();
 
@@ -282,12 +240,12 @@ class AutoComplete_Admin {
     public static function check_server_connectivity($cache_timeout = 86400) {
 
         $debug = array();
-        $debug[ 'PHP_VERSION' ]         = PHP_VERSION;
-        $debug[ 'WORDPRESS_VERSION' ]   = $GLOBALS['wp_version'];
-        $debug[ 'AKISMET_VERSION' ]     = AKISMET_VERSION;
-        $debug[ 'AKISMET__PLUGIN_DIR' ] = AKISMET__PLUGIN_DIR;
-        $debug[ 'SITE_URL' ]            = site_url();
-        $debug[ 'HOME_URL' ]            = home_url();
+        $debug[ 'PHP_VERSION' ]              = PHP_VERSION;
+        $debug[ 'WORDPRESS_VERSION' ]        = $GLOBALS['wp_version'];
+        $debug[ 'AUTOCOMPLETE_VERSION' ]     = AUTOCOMPLETE_VERSION;
+        $debug[ 'AUTOCOMPLETE_PLUGIN_DIR' ]  = AUTOCOMPLETE_PLUGIN_DIR;
+        $debug[ 'SITE_URL' ]                 = site_url();
+        $debug[ 'HOME_URL' ]                 = home_url();
 
         $servers = get_option('autocomplete_available_servers');
         if ( (time() - get_option('autocomplete_connectivity_time') < $cache_timeout) && $servers !== false ) {
@@ -296,12 +254,7 @@ class AutoComplete_Admin {
             update_option('autocomplete_connectivity_time', time());
         }
 
-        if ( wp_http_supports( array( 'ssl' ) ) ) {
-            $response = wp_remote_get( 'https://rest.autocomplete.com/1.1/test' );
-        }
-        else {
-            $response = wp_remote_get( 'http://rest.autocomplete.com/1.1/test' );
-        }
+        $response = wp_remote_get( constant('AUTOCOMPLETE_URL_API') );
 
         $debug[ 'gethostbynamel' ]  = function_exists('gethostbynamel') ? 'exists' : 'not here';
         $debug[ 'Servers' ]         = $servers;
@@ -313,11 +266,6 @@ class AutoComplete_Admin {
             return true;
 
         return false;
-    }
-
-    // Check the server connectivity and store the available servers in an option.
-    public static function get_server_connectivity($cache_timeout = 86400) {
-        return self::check_server_connectivity( $cache_timeout );
     }
 
     public static function get_page_url( $page = 'config' ) {
@@ -382,60 +330,16 @@ class AutoComplete_Admin {
 
     public static function display_configuration_page() {
         $api_key = AutoComplete::get_api_key();
+        $details = [];
 
-        AutoComplete::view( 'config', ['api_key' => $api_key, 'notices' => self::$notices]);
-    }
-
-    public static function display_notice() {
-        global $hook_suffix;
-
-        if ( in_array( $hook_suffix, array( 'jetpack_page_autocomplete-key-config', 'settings_page_autocomplete-key-config' ) ) ) {
-            // This page manages the notices and puts them inline where they make sense.
-            return;
-        }
-
-        if ( in_array( $hook_suffix, array( 'edit-comments.php' ) ) && (int) get_option( 'autocomplete_alert_code' ) > 0 ) {
-            AutoComplete::verify_key( AutoComplete::get_api_key() ); //verify that the key is still in alert state
-
-            $alert_code = get_option( 'autocomplete_alert_code' );
-            if ( isset( AutoComplete::$limit_notices[ $alert_code ] ) ) {
-                self::display_usage_limit_alert();
-            } elseif ( $alert_code > 0 ) {
-                self::display_alert();
+        if (!empty($api_key)) {
+            $response = AutoComplete::fetch_account_details();
+            if (!AutoComplete::is_response_ok($response, $details)) {
+                self::$notices['alert'] = 'account-details-failed';
             }
         }
-        elseif ( ( 'plugins.php' === $hook_suffix || 'edit-comments.php' === $hook_suffix ) && ! AutoComplete::get_api_key() ) {
-            // Show the "Set Up autocomplete" banner on the comments and plugin pages if no API key has been set.
-            self::display_api_key_warning();
-        }
-        elseif ( $hook_suffix == 'edit-comments.php' && wp_next_scheduled( 'autocomplete_schedule_cron_recheck' ) ) {
-            self::display_spam_check_warning();
-        }
 
-        if ( isset( $_GET['autocomplete_recheck_complete'] ) ) {
-            $recheck_count = (int) $_GET['recheck_count'];
-            $spam_count = (int) $_GET['spam_count'];
-
-            if ( $recheck_count === 0 ) {
-                $message = __( 'There were no comments to check. autocomplete will only check comments awaiting moderation.', 'autocomplete' );
-            }
-            else {
-                $message = sprintf( _n( 'autocomplete checked %s comment.', 'autocomplete checked %s comments.', $recheck_count, 'autocomplete' ), number_format( $recheck_count ) );
-                $message .= ' ';
-
-                if ( $spam_count === 0 ) {
-                    $message .= __( 'No comments were caught as spam.', 'autocomplete' );
-                }
-                else {
-                    $message .= sprintf( _n( '%s comment was caught as spam.', '%s comments were caught as spam.', $spam_count, 'autocomplete' ), number_format( $spam_count ) );
-                }
-            }
-
-            echo '<div class="notice notice-success"><p>' . esc_html( $message ) . '</p></div>';
-        }
-        else if ( isset( $_GET['autocomplete_recheck_error'] ) ) {
-            echo '<div class="notice notice-error"><p>' . esc_html( __( 'autocomplete could not recheck your comments for spam.', 'autocomplete' ) ) . '</p></div>';
-        }
+        AutoComplete::view( 'config', ['api_key' => $api_key, 'notices' => self::$notices, 'details' => $details]);
     }
 
     /**
@@ -444,10 +348,10 @@ class AutoComplete_Admin {
     public static function modify_plugin_description( $all_plugins ) {
         if ( isset( $all_plugins['autocomplete/autocomplete.php'] ) ) {
             if ( AutoComplete::get_api_key() ) {
-                $all_plugins['autocomplete/autocomplete.php']['Description'] = __( 'Welcome to autocomplete!', 'autocomplete' );
+                $all_plugins['autocomplete/autocomplete.php']['Description'] = __( 'Welcome to AutoComplete!', 'autocomplete' );
             }
             else {
-                $all_plugins['autocomplete/autocomplete.php']['Description'] = __( 'Welcome to autocomplete! To get started, just go to <a href="admin.php?page=autocomplete-key-config">your autocomplete Settings page</a> to set up your API key.', 'autocomplete' );
+                $all_plugins['autocomplete/autocomplete.php']['Description'] = __( 'Welcome to AutoComplete! To get started, just go to <a href="admin.php?page=autocomplete-key-config">your AutoComplete Settings page</a> to set up your API Key.', 'autocomplete' );
             }
         }
 

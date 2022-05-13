@@ -615,7 +615,6 @@ table.comments td.comment p a:after {
 	text-decoration: none;
 	vertical-align: top;
 	box-sizing: border-box;
-	font-size: 14px;
 	line-height: 21px;
 	border-radius: 5px;
 	padding: 7px 14px 9px;
@@ -624,6 +623,10 @@ table.comments td.comment p a:after {
 	appearance: none;
 	color: #fff;
 	background: #3a28bf;
+}
+
+.autocomplete-account-details p {
+	font-size: 1.2em;
 }
 
 .autocomplete-button:hover {

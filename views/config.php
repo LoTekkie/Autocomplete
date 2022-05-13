@@ -58,13 +58,39 @@
                 </form>
             </div>
         </div>
-    </div>
 
-    <div class="autocomplete-enter-api-key-box centered">
-
-        <div class="how-to-use">
-
+        <br>
+        <div class="autocomplete-card">
+            <div class="autocomplete-section-header">
+                <div class="autocomplete-section-header__label">
+                    <span><?php esc_html_e( 'Account Details' , 'autocomplete'); ?></span>
+                </div>
+            </div>
+            <div class="inside">
+              <div class="autocomplete-account-details">
+                <?php if ( isset($details['username']) ) { ?>
+                  <p><?php esc_html_e( 'Username' , 'autocomplete'); ?>: <?php echo ucwords($details['username']) ?></p>
+                <?php } ?>
+                <?php if ( isset($details['balance']) ) { ?>
+                   <p><?php esc_html_e( 'Balance' , 'autocomplete'); ?>: <?php echo number_format($details['balance']) ?></p>
+                <?php } ?>
+              </div>
+            </div>
         </div>
-    </div>
 
+        <br>
+        <div class="autocomplete-card">
+            <div class="autocomplete-section-header">
+                <div class="autocomplete-section-header__label">
+                    <span><?php esc_html_e( 'Getting Started' , 'autocomplete'); ?></span>
+                </div>
+            </div>
+            <div class="inside">
+              <div class="">
+
+              </div>
+            </div>
+        </div>
+
+    </div>
 </div>

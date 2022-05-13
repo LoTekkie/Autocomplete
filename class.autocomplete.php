@@ -33,19 +33,74 @@ class Autocomplete
         return apply_filters('autocomplete_get_api_key', defined('AUTOCOMPLETE_API_KEY') ? constant('AUTOCOMPLETE_API_KEY') : get_option('autocomplete_api_key'));
     }
 
-    public static function check_key_status($key, $ip = null)
+        /**
+     * * Make a request to the Autocomplete API.
+     * https://autocomplete.sh/documentation#api-access
+     * @param $path
+     * @param string $method
+     * @param null $api_key
+     * @param string $request_body
+     * @return array
+     */
+    public static function api_call($path, $method='POST', $api_key=null, $request_body='')
     {
-        $response = self::api_call('account', 'GET', '', $key);
+        $key = $api_key ?? self::get_api_key();
 
-        if ($response && $response[1]) {
-            if (is_string($response[1])) {
-                $response[1] = json_decode($response[1], true);
-            }
+        $http_args = array(
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $key
+            ),
+            'httpversion' => '1.0',
+            'timeout' => 15
+        );
+
+        $autocomplete_api_url = autocomplete_url($path, true);
+
+        if(strtoupper($method) == 'POST') {
+            $http_args['body'] = $request_body;
+            $response = wp_remote_post($autocomplete_api_url, $http_args);
         } else {
-            return false;
+            $response = wp_remote_get($autocomplete_api_url, $http_args);
         }
 
-        return is_array($response[1]) && array_key_exists( 'status', $response[1]) && $response[1]['status'] == 200;
+        AutoComplete::log(compact('autocomplete_url', 'http_args', 'response'));
+
+        if (is_wp_error($response)) {
+            do_action('autocomplete_https_request_failure', $response);
+            return array('', '');
+        }
+
+        return array($response['headers'], $response['body'], true);
+    }
+
+    public static function get_response_body($response)
+    {
+        if ($response && isset($response[1]) && is_string($response[1])) {
+            if (is_array($body = json_decode($response[1], true))) {
+                return $body;
+            }
+        }
+
+        return [];
+    }
+
+    public static function is_response_ok($response, &$body=null)
+    {
+       $body = self::get_response_body($response);
+
+       return array_key_exists( 'status', $body) && $body['status'] == 200;
+    }
+
+    public static function fetch_account_details()
+    {
+        return self::api_call('account', 'GET');
+    }
+
+    public static function check_key_status($api_key)
+    {
+        $response = self::api_call('account', 'GET', $api_key);
+
+        return self::is_response_ok($response);
     }
 
     public static function verify_key($key, $ip = null)
@@ -108,46 +163,6 @@ class Autocomplete
     {
         $mtime = explode(' ', microtime());
         return $mtime[1] + $mtime[0];
-    }
-
-    /**
-     * * Make a request to the Autocomplete API.
-     * https://autocomplete.sh/documentation#api-access
-     * @param $path
-     * @param string $method
-     * @param string $request_body
-     * @param null $key
-     * @return array
-     */
-    public static function api_call($path, $method='POST', $request_body='', $key=null)
-    {
-        $api_key = $key ?? self::get_api_key();
-
-        $http_args = array(
-            'headers' => array(
-                'Authorization' => 'Bearer ' . $api_key
-            ),
-            'httpversion' => '1.0',
-            'timeout' => 15
-        );
-
-        $autocomplete_api_url = autocomplete_url($path, true);
-
-        if(strtoupper($method) == 'POST') {
-            $http_args['body'] = $request_body;
-            $response = wp_remote_post($autocomplete_api_url, $http_args);
-        } else {
-            $response = wp_remote_get($autocomplete_api_url, $http_args);
-        }
-
-        AutoComplete::log(compact('autocomplete_url', 'http_args', 'response'));
-
-        if (is_wp_error($response)) {
-            do_action('autocomplete_https_request_failure', $response);
-            return array('', '');
-        }
-
-        return array($response['headers'], $response['body'], true);
     }
 
     private static function bail_on_activation($message, $deactivate = true)
