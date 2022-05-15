@@ -1,5 +1,5 @@
 :root {
-    --sans-font: Hind, -apple-system, BlinkMacSystemFont, "Avenir Next", Avenir, "Nimbus Sans L", Roboto, Noto, "Segoe UI", Arial, Helvetica, "Helvetica Neue", sans-serif;
+    --sans-font: Hind, -autocomplete-system, BlinkMacSystemFont, "Avenir Next", Avenir, "Nimbus Sans L", Roboto, Noto, "Segoe UI", Arial, Helvetica, "Helvetica Neue", sans-serif;
     --mono-font: 'Source Code Pro', Consolas, Menlo, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
     --base-fontsize: 1.15rem;
     --header-scale: 1.25;
@@ -238,14 +238,14 @@ table.comments td.comment p a:after {
 	border: 1px solid #4F800D;
 	padding: 5px;
 	margin: 15px 0;
-	background: #83AF24;
-	background-image: -webkit-gradient(linear, 0% 0, 80% 100%, from(#83AF24), to(#4F800D));
-	background-image: -moz-linear-gradient(80% 100% 120deg, #4F800D, #83AF24);
 	-moz-border-radius: 3px;
 	border-radius: 3px;
 	-webkit-border-radius: 3px;
 	position: relative;
 	overflow: hidden;
+    width: 100%;
+    background: url(./img/herobg.webp) no-repeat, linear-gradient(-281.11deg, rgb(39 56 211) 0%, rgb(78 22 169) 95%);
+    box-shadow: 0 1em 2em -.5em rgba(0, 0, 0, 0.15);
 }
 
 .autocomplete_activate .aa_a {
@@ -254,22 +254,18 @@ table.comments td.comment p a:after {
 	right: 10px;
 	font-size: 140px;
 	color: #769F33;
-	font-family: Georgia, "Times New Roman", Times, serif;
+	font-family: var(--mono-font);
 }
 
 .autocomplete_activate .aa_button {
 	font-weight: bold;
-	border: 1px solid #029DD6;
-	border-top: 1px solid #06B9FD;
 	font-size: 15px;
 	text-align: center;
 	padding: 9px 0 8px 0;
 	color: #FFF;
-	background: #029DD6;
-	background-image: -webkit-gradient(linear, 0% 0, 0% 100%, from(#029DD6), to(#0079B1));
-	background-image: -moz-linear-gradient(0% 100% 90deg, #0079B1, #029DD6);
+	background: #3a28bf;
 	-moz-border-radius: 2px;
-	border-radius: 2px;
+	border-radius: 5px;
 	-webkit-border-radius: 2px;
 	width: 100%;
 	cursor: pointer;
@@ -278,34 +274,23 @@ table.comments td.comment p a:after {
 
 .autocomplete_activate .aa_button:hover {
 	text-decoration: none !important;
-	border: 1px solid #029DD6;
-	border-bottom: 1px solid #00A8EF;
 	font-size: 15px;
 	text-align: center;
 	padding: 9px 0 8px 0;
 	color: #F0F8FB;
-	background: #0079B1;
-	background-image: -webkit-gradient(linear, 0% 0, 0% 100%, from(#0079B1), to(#0092BF));
-	background-image: -moz-linear-gradient(0% 100% 90deg, #0092BF, #0079B1);
+	background: #4648e0;
 	-moz-border-radius: 2px;
 	border-radius: 2px;
 	-webkit-border-radius: 2px;
 }
 
 .autocomplete_activate .aa_button_border {
-	border: 1px solid #006699;
-	-moz-border-radius: 2px;
-	border-radius: 2px;
-	-webkit-border-radius: 2px;
-	background: #029DD6;
-	background-image: -webkit-gradient(linear, 0% 0, 0% 100%, from(#029DD6), to(#0079B1));
-	background-image: -moz-linear-gradient(0% 100% 90deg, #0079B1, #029DD6);
+	border-radius: 5px;
 }
 
 .autocomplete_activate .aa_button_container {
 	box-sizing: border-box;
 	display: inline-block;
-	background: #DEF1B8;
 	padding: 5px;
 	-moz-border-radius: 2px;
 	border-radius: 2px;
@@ -598,7 +583,7 @@ table.comments td.comment p a:after {
 	padding: 0 1.5rem;
 }
 
-.autocomplete-button, .autocomplete-button:hover, .autocomplete-button:visited {
+.autocomplete-button, .autocomplete-button:hover, .autocomplete-button:visited, input.autocomplete-input.submit {
 
 	border-color: #c8d7e1;
 	border-style: solid;
@@ -767,4 +752,128 @@ div.error.autocomplete-usage-limit-alert {
     width: 500px;
     max-width: 700px;
     margin: auto;
+}
+
+.autocomplete-label {
+	margin-bottom: 5px;
+}
+
+.autocomplete-field-group {
+	display: flex !important;
+	flex-flow: row nowrap;
+}
+
+.autocomplete-field {
+	display: flex !important;
+	flex-flow: column nowrap !important;
+	margin-bottom: 15px;
+}
+
+input.autocomplete-input {
+
+}
+
+input.autocomplete-input.submit {
+	max-width: 250px;
+}
+
+input.autocomplete-input.number {
+	max-width: 68px !important;
+	margin-right: 10px;
+}
+
+input.autocomplete-input.checkbox:before {
+	display:none;
+}
+
+input.autocomplete-input.checkbox {
+    position: relative;
+    -webkit-appearance: none;
+    outline: none;
+    width: 50px;
+    height: 30px;
+    background-color: #fff;
+    border: 1px solid #D9DADC;
+    border-radius: 50px;
+    box-shadow: inset -20px 0 0 0 #ddd;
+    zoom: .7;
+	margin: 0px 10px 0px 0px;
+}
+
+input.autocomplete-input.checkbox:after {
+    content: "";
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    background: transparent;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+input.autocomplete-input.checkbox:checked {
+    box-shadow: inset 20px 0 0 0 #3db978;
+    border-color: #3db978;
+}
+
+input.autocomplete-input.checkbox:checked:after {
+    left: 20px;
+    box-shadow: -2px 4px 3px rgba(0, 0, 0, 0.05);
+}
+
+input.autocomplete-input.checkbox:checked:before {
+    display: none !important;
+}
+
+.edit-post-meta-boxes-area.is-side #autocomplete-spinner {
+  background: rgba(48, 48, 48, 0.46) center center;
+  z-index: 100000;
+  width:100%;
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#autocomplete .handle-order-lower {
+	display: none;
+}
+
+#autocomplete .handle-order-higher {
+	display: none;
+}
+
+#autocomplete h2.ui-sortable-handle {
+	padding: 16px !important;
+}
+
+#autocomplete .handlediv {
+	position: relative;
+	right: 5px;
+}
+
+#autocomplete, #autocomplete .hndle {
+	cursor: pointer;
+}
+
+#autocomplete .handlediv:focus {
+	box-shadow: none;
+	outline: none;
+}
+
+#autocomplete .postbox-header:hover {
+	border: 2px solid #007cba;
+}
+
+#autocomplete .postbox-header:hover {
+	background: #f0f0f0;
+	border: none;
+}
+
+#autocomplete .focused {
+	border: 2px solid #007cba;
 }

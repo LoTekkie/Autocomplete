@@ -39,6 +39,14 @@
                                     <span class="api-key full-max-width" style="margin-top:10px;"><input id="key" name="key" type="text" size="15" value="<?php echo esc_attr( get_option('autocomplete_api_key') ); ?>" style="width:100%;"></span>
                                 </td>
                             </tr>
+
+                        <?php } else { ?>
+                            <tr class="autocomplete-api-key">
+                                <td align="left">
+                                    <span for="key" style="font-size:1.2em;position:relative;bottom:10px;"><?php esc_html_e('AutoComplete API Key', 'autocomplete');?></span>
+                                    <span class="api-key full-max-width" style="margin-top:10px;"><input readonly id="key" name="key" type="text" size="15" value="<?php echo esc_attr( constant('AUTOCOMPLETE_API_KEY') ); ?>" style="width:100%;"></span>
+                                </td>
+                            </tr>
                         <?php } ?>
                         </tbody>
                     </table>
@@ -49,10 +57,12 @@
                             </div>
                         <?php } ?>
                         <?php wp_nonce_field(AutoComplete_Admin::NONCE) ?>
+                        <?php if ( ! AutoComplete::predefined_api_key() ) { ?>
                         <div id="publishing-action">
                             <input type="hidden" name="action" value="enter-key">
                             <input type="submit" name="submit" id="submit" class="autocomplete-button autocomplete-could-be-primary" value="<?php esc_attr_e('Save Changes', 'autocomplete');?>">
                         </div>
+                        <?php } ?>
                         <div class="clear"></div>
                     </div>
                 </form>

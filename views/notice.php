@@ -9,8 +9,8 @@
     <form name="autocomplete_activate" action="<?php echo esc_url( AutoComplete_Admin::get_page_url() ); ?>" method="POST">
       <div class="autocomplete_activate">
         <div class="aa_button_container">
-          <div class="aa_button_border">
-            <input type="submit" class="aa_button" value="<?php esc_attr_e( 'Configure AutoComplete', 'autocomplete' ); ?>" />
+          <div class="">
+            <input type="submit" class="autocomplete-button" value="<?php esc_attr_e( 'Configure AutoComplete', 'autocomplete' ); ?>" />
           </div>
         </div>
         <div class="aa_description"><?php _e('<strong>Almost done</strong> - Configure AutoComplete and say goodbye to manually typing blog posts!', 'autocomplete');?></div>

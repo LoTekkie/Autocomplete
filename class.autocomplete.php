@@ -16,8 +16,32 @@ class Autocomplete
      */
     private static function init_hooks()
     {
-        AutoComplete_Metabox::make();
         self::$initiated = true;
+
+        self::load_resources();
+
+        AutoComplete_Metabox::make();
+    }
+
+    public static function load_resources() {
+        global $pagenow;
+
+        if (in_array($pagenow, ['post-new.php', 'post.php'])) {
+            wp_register_style( 'autocomplete.css', plugin_dir_url( __FILE__ ) . '_inc/autocomplete.css', array(), AUTOCOMPLETE_VERSION );
+            wp_enqueue_style( 'autocomplete.css');
+
+            wp_register_style( 'fontawesome.min.css', plugin_dir_url( __FILE__ ) . '_inc/fontawesome.min.css', array(), AUTOCOMPLETE_VERSION );
+            wp_enqueue_style( 'fontawesome.min.css');
+
+            wp_register_script( 'autocomplete.js', plugin_dir_url( __FILE__ ) . '_inc/autocomplete.js', array('jquery'), AUTOCOMPLETE_VERSION );
+            wp_enqueue_script( 'autocomplete.js' );
+
+            wp_register_script( 'sweetalert.min.js', plugin_dir_url( __FILE__ ) . '_inc/sweetalert.min.js', array('jquery'), AUTOCOMPLETE_VERSION );
+            wp_enqueue_script( 'sweetalert.min.js' );
+
+            wp_register_script( 'fontawesome.min.js', plugin_dir_url( __FILE__ ) . '_inc/fontawesome.min.js', array('jquery'), AUTOCOMPLETE_VERSION );
+            wp_enqueue_script( 'fontawesome.min.js' );
+        }
     }
 
     public static function predefined_api_key() {
@@ -233,7 +257,7 @@ class Autocomplete
         if (version_compare($GLOBALS['wp_version'], AUTOCOMPLETE_MINIMUM_WP_VERSION, '<')) {
             load_plugin_textdomain('autocomplete');
 
-            $message = '<strong>' . sprintf(esc_html__('autocomplete %s requires WordPress %s or higher.', 'akismet'), AUTOCOMPLETE_VERSION, AUTOCOMPLETE_MINIMUM_WP_VERSION) . '</strong> ' . sprintf(__('Please <a href="%1$s">upgrade WordPress</a> to a current version, or <a href="%2$s">downgrade to version 2.4 of the Akismet plugin</a>.', 'akismet'), 'https://codex.wordpress.org/Upgrading_WordPress', 'https://wordpress.org/extend/plugins/akismet/download/');
+            $message = '<strong>' . sprintf(esc_html__('Autocomplete %s requires WordPress %s or higher.', 'autocomplete'), AUTOCOMPLETE_VERSION, AUTOCOMPLETE_MINIMUM_WP_VERSION) . '</strong> ' . sprintf(__('Please <a href="%1$s">upgrade WordPress</a> to a current version. </a>.', 'autocomplete'), 'https://codex.wordpress.org/Upgrading_WordPress');
 
             AutoComplete::bail_on_activation($message);
         } elseif (!empty($_SERVER['SCRIPT_NAME']) && false !== strpos($_SERVER['SCRIPT_NAME'], '/wp-admin/plugins.php')) {
@@ -247,6 +271,8 @@ class Autocomplete
      */
     public static function plugin_deactivation()
     {
+        delete_option('autocomplete_api_key');
+        delete_option('autocomplete_key_verified');
         delete_option('activated_autocomplete');
     }
 

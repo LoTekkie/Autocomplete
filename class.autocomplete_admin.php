@@ -17,22 +17,30 @@ class AutoComplete_Admin {
     }
 
     public static function init_hooks() {
+        self::$initiated = true;
+
         add_action( 'admin_init', array( 'AutoComplete_Admin', 'admin_init' ) );
         add_action( 'admin_menu', array( 'AutoComplete_Admin', 'admin_menu' ), 5 );
         add_action( 'admin_notices', array( 'AutoComplete_Admin', 'display_notice' ) );
+
         add_action( 'admin_enqueue_scripts', array( 'AutoComplete_Admin', 'load_resources' ) );
         add_filter( 'plugin_action_links', array( 'AutoComplete_Admin', 'plugin_action_links' ), 10, 2 );
         add_filter( 'plugin_action_links_'.plugin_basename( plugin_dir_path( __FILE__ ) . 'autocomplete.php'), array( 'AutoComplete_Admin', 'admin_plugin_settings_link' ) );
         add_filter( 'all_plugins', array( 'AutoComplete_Admin', 'modify_plugin_description' ) );
-
-        self::$initiated = true;
     }
 
     public static function admin_init() {
+
+        $key_verified = false;
+        if ($existing_key = constant('AUTOCOMPLETE_API_KEY')) {
+            $key_verified = AutoComplete::check_key_status($existing_key);
+        }
+
         if ( get_option( 'activated_autocomplete' ) ) {
             delete_option( 'activated_autocomplete' );
-            if ( ! headers_sent() ) {
-                wp_redirect( add_query_arg( array( 'page' => 'autocomplete-key-config', 'view' => 'start' ) ) );
+
+            if ( ! headers_sent() && $key_verified ) {
+                wp_redirect( add_query_arg( array( 'page' => 'autocomplete-key-config', 'view' => 'start' ), class_exists( 'Jetpack' ) ? admin_url( 'admin.php' ) : admin_url( 'options-general.php' ) ) );
             }
         }
 
@@ -64,7 +72,6 @@ class AutoComplete_Admin {
 
     public static function load_resources() {
         global $hook_suffix;
-
 
         if ( in_array( $hook_suffix, apply_filters( 'autocomplete_admin_page_hook_suffixes', array(
             'index.php', # dashboard
@@ -194,6 +201,7 @@ class AutoComplete_Admin {
 
         if ( $key_status == 'valid' ) {
             update_option( 'autocomplete_api_key', $api_key );
+            update_option('autocomplete_key_verified', true);
             self::$notices['status'] = 'new-key-valid';
         }
         elseif ( in_array( $key_status, array( 'invalid', 'failed' ) ) ) {
@@ -304,6 +312,7 @@ class AutoComplete_Admin {
             if ( $_GET['action'] == 'delete-key' ) {
                 if ( isset( $_GET['_wpnonce'] ) && wp_verify_nonce( $_GET['_wpnonce'], self::NONCE ) )
                     delete_option( 'autocomplete_api_key' );
+                    update_option('autocomplete_key_verified', false);
             }
         }
 
@@ -313,19 +322,6 @@ class AutoComplete_Admin {
         }
 
         AutoComplete::view( 'start', array('notices' => self::$notices));
-
-        /*
-        // To see all variants when testing.
-        $autocomplete_user->status = 'no-sub';
-        AutoComplete::view( 'start', compact( 'autocomplete_user' ) );
-        $autocomplete_user->status = 'cancelled';
-        AutoComplete::view( 'start', compact( 'autocomplete_user' ) );
-        $autocomplete_user->status = 'suspended';
-        AutoComplete::view( 'start', compact( 'autocomplete_user' ) );
-        $autocomplete_user->status = 'other';
-        AutoComplete::view( 'start', compact( 'autocomplete_user' ) );
-        $autocomplete_user = false;
-        */
     }
 
     public static function display_configuration_page() {
@@ -336,11 +332,29 @@ class AutoComplete_Admin {
             $response = AutoComplete::fetch_account_details();
             if (!AutoComplete::is_response_ok($response, $details)) {
                 self::$notices['alert'] = 'account-details-failed';
+                 update_option('autocomplete_key_verified', false);
+            } else {
+                 if (!get_option('autocomplete_key_verified')) {
+                     self::$notices['status'] = 'new-key-valid';
+                 }
+                 update_option('autocomplete_key_verified', true);
             }
         }
 
         AutoComplete::view( 'config', ['api_key' => $api_key, 'notices' => self::$notices, 'details' => $details]);
     }
+
+   public static function display_notice() {
+		global $hook_suffix;
+
+		if ( in_array( $hook_suffix, array( 'jetpack_page_autocomplete-key-config', 'settings_page_autocomeplete-key-config' ) ) ) {
+			return;
+		}
+
+		if ( ( 'plugins.php' === $hook_suffix ) && (! get_option('autocomplete_key_verified') ) ) {
+			self::display_api_key_warning();
+		}
+	}
 
     /**
      * When autocomplete is active, remove the "Activate autocomplete" step from the plugin description.

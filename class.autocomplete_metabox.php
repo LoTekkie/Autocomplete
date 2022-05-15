@@ -12,22 +12,48 @@ class AutoComplete_Metabox {
             ),
         'context' => 'side',
         'priority' => 'default',
-        'fields' =>
-            array (
-                0 =>
-                    array (
-                        'type' => 'text',
-                        'label' => 'Text',
-                        'id' => 'autocomplete_text',
-                    ),
-                1 =>
-                    array (
-                        'type' => 'number',
-                        'label' => 'Tokens In',
-                        'step' => '1',
-                        'id' => 'autocomplete_tokens-in',
-                    ),
-            ),
+        'number_fields' => array (
+            0 =>
+                array (
+                    'type' => 'number',
+                    'class' => 'autocomplete-input number',
+                    'label' => 'Tokens',
+                    'step' => '1',
+                    'default' => '16',
+                    'min' => '1',
+                    'max' => '2048',
+                    'id' => 'autocomplete-tokens',
+                ),
+            1 =>
+                array (
+                    'type' => 'number',
+                    'class' => 'autocomplete-input number',
+                    'label' => 'Temperature',
+                    'step' => '0.1',
+                    'default' => '0.7',
+                    'min' => '0.1',
+                    'max' => '1.0',
+                    'id' => 'autocomplete-temperature',
+                ),
+        ),
+        'fields' => array(
+            0 =>
+                array (
+                    'type' => 'checkbox',
+                    'class' => 'autocomplete-input checkbox',
+                    'label' => 'Optimize Readability',
+                    'checked' => true,
+                    'id' => 'autocomplete-readability',
+                ),
+            1 =>
+                array (
+                    'type' => 'submit',
+                    'class' => 'autocomplete-input submit',
+
+                    'default' => 'Submit',
+                    'id' => 'autocomplete-submit',
+                )
+        )
     );
 
     public function __construct() {
@@ -61,25 +87,46 @@ class AutoComplete_Metabox {
     }
 
     public function add_meta_box_callback() {
+        ?><div id="autocomplete-form"><?php
+        $this->balance();
+        $this->number_fields();
         $this->fields_div();
+        ?></div><?php
+    }
+
+    private function number_fields() {
+        ?><div class="autocomplete-field-group"><?php
+        foreach ( self::CONFIG['number_fields'] as $field ) {
+            ?><div class="components-base-control">
+            <div class="components-base-control__field autocomplete-field"><?php
+                $this->label( $field );
+                $this->field( $field );
+                ?></div>
+            </div><?php
+        }
+        ?></div><?php
     }
 
     private function fields_div() {
         foreach ( self::CONFIG['fields'] as $field ) {
             ?><div class="components-base-control">
-          <div class="components-base-control__field"><?php
-              $this->label( $field );
-              $this->field( $field );
-              ?></div>
-          </div><?php
+            <div class="components-base-control__field autocomplete-field"><?php
+                $this->label( $field );
+                $this->field( $field );
+                ?></div>
+            </div><?php
         }
+    }
+
+    private function balance() {
+
     }
 
     private function label( $field ) {
         switch ( $field['type'] ) {
             default:
                 printf(
-                    '<label class="components-base-control__label" for="%s">%s</label>',
+                    '<label class="components-base-control__label autocomplete-label" for="%s">%s</label>',
                     $field['id'], $field['label']
                 );
         }
@@ -89,6 +136,9 @@ class AutoComplete_Metabox {
         switch ( $field['type'] ) {
             case 'number':
                 $this->input_minmax( $field );
+                break;
+            case 'checkbox':
+                $this->input_checkbox( $field );
                 break;
             default:
                 $this->input( $field );
@@ -108,7 +158,8 @@ class AutoComplete_Metabox {
 
     private function input_minmax( $field ) {
         printf(
-            '<input class="components-text-control__input" id="%s" %s %s name="%s" %s type="%s" value="%s">',
+            '<input class="components-text-control__input %s" id="%s" %s %s name="%s" %s type="%s" value="%s">',
+            isset( $field['class'] ) ? $field['class'] : '',
             $field['id'],
             isset( $field['max'] ) ? "max='{$field['max']}'" : '',
             isset( $field['min'] ) ? "min='{$field['min']}'" : '',
@@ -116,6 +167,18 @@ class AutoComplete_Metabox {
             isset( $field['step'] ) ? "step='{$field['step']}'" : '',
             $field['type'],
             $this->value( $field )
+        );
+    }
+
+    private function input_checkbox( $field ) {
+         printf(
+            '<input class="components-text-control__input %s" id="%s" name="%s" %s type="%s" value="%s" %s>',
+            isset( $field['class'] ) ? $field['class'] : '',
+            $field['id'], $field['id'],
+            isset( $field['pattern'] ) ? "pattern='{$field['pattern']}'" : '',
+            $field['type'],
+            $this->value( $field ),
+            isset( $field['checked'] ) && $field['checked'] ? 'checked' : ''
         );
     }
 
