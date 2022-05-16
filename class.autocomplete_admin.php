@@ -329,7 +329,7 @@ class AutoComplete_Admin {
         $details = [];
 
         if (!empty($api_key)) {
-            $response = AutoComplete::fetch_account_details();
+            $response = AutoComplete::api_fetch_account_details();
             if (!AutoComplete::is_response_ok($response, $details)) {
                 self::$notices['alert'] = 'account-details-failed';
                  update_option('autocomplete_key_verified', false);

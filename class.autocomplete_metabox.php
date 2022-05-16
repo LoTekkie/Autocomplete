@@ -86,12 +86,13 @@ class AutoComplete_Metabox {
         }
     }
 
-    public function add_meta_box_callback() {
-        ?><div id="autocomplete-form"><?php
-        $this->balance();
+    public function add_meta_box_callback() { //form tag not allowed here..
+        ?><div class="autocomplete-account-details autocomplete-field-group">
+            <label class="autocomplete-label">Balance:</label> <span id="autocomplete-balance">0</span>
+        </div><hr class="autocomplete-hr"><?php
         $this->number_fields();
         $this->fields_div();
-        ?></div><?php
+        printf('</div>');
     }
 
     private function number_fields() {
@@ -116,10 +117,6 @@ class AutoComplete_Metabox {
                 ?></div>
             </div><?php
         }
-    }
-
-    private function balance() {
-
     }
 
     private function label( $field ) {

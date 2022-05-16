@@ -20,6 +20,9 @@ class Autocomplete
 
         self::load_resources();
 
+        add_action( "wp_ajax_text_generate", array( 'AutoComplete', 'ajax_text_generate' ) );
+        add_action( "wp_ajax_fetch_account_details", array( 'AutoComplete', 'ajax_fetch_account_details' ) );
+
         AutoComplete_Metabox::make();
     }
 
@@ -30,17 +33,12 @@ class Autocomplete
             wp_register_style( 'autocomplete.css', plugin_dir_url( __FILE__ ) . '_inc/autocomplete.css', array(), AUTOCOMPLETE_VERSION );
             wp_enqueue_style( 'autocomplete.css');
 
-            wp_register_style( 'fontawesome.min.css', plugin_dir_url( __FILE__ ) . '_inc/fontawesome.min.css', array(), AUTOCOMPLETE_VERSION );
-            wp_enqueue_style( 'fontawesome.min.css');
-
             wp_register_script( 'autocomplete.js', plugin_dir_url( __FILE__ ) . '_inc/autocomplete.js', array('jquery'), AUTOCOMPLETE_VERSION );
             wp_enqueue_script( 'autocomplete.js' );
+            wp_localize_script('autocomplete.js','ajax_object', array('ajax_url' => admin_url('admin-ajax.php')));
 
-            wp_register_script( 'sweetalert.min.js', plugin_dir_url( __FILE__ ) . '_inc/sweetalert.min.js', array('jquery'), AUTOCOMPLETE_VERSION );
+            wp_register_script( 'sweetalert.min.js', plugin_dir_url( __FILE__ ) . '_inc/sweetalert.min.js', array(), AUTOCOMPLETE_VERSION );
             wp_enqueue_script( 'sweetalert.min.js' );
-
-            wp_register_script( 'fontawesome.min.js', plugin_dir_url( __FILE__ ) . '_inc/fontawesome.min.js', array('jquery'), AUTOCOMPLETE_VERSION );
-            wp_enqueue_script( 'fontawesome.min.js' );
         }
     }
 
@@ -57,7 +55,7 @@ class Autocomplete
         return apply_filters('autocomplete_get_api_key', defined('AUTOCOMPLETE_API_KEY') ? constant('AUTOCOMPLETE_API_KEY') : get_option('autocomplete_api_key'));
     }
 
-        /**
+    /**
      * * Make a request to the Autocomplete API.
      * https://autocomplete.sh/documentation#api-access
      * @param $path
@@ -66,24 +64,24 @@ class Autocomplete
      * @param string $request_body
      * @return array
      */
-    public static function api_call($path, $method='POST', $api_key=null, $request_body='')
+    public static function api_call($path, $method='POST', $api_key=null, $request_body=[])
     {
         $key = $api_key ?? self::get_api_key();
 
         $http_args = array(
             'headers' => array(
-                'Authorization' => 'Bearer ' . $key
+                'Authorization' => 'Bearer ' . $key,
             ),
-            'httpversion' => '1.0',
-            'timeout' => 15
+            'timeout' => 100
         );
 
         $autocomplete_api_url = autocomplete_url($path, true);
 
         if(strtoupper($method) == 'POST') {
-            $http_args['body'] = $request_body;
+            $http_args['body'] = json_encode($request_body);
             $response = wp_remote_post($autocomplete_api_url, $http_args);
         } else {
+            $http_args['body'] = http_build_query($request_body);
             $response = wp_remote_get($autocomplete_api_url, $http_args);
         }
 
@@ -91,7 +89,7 @@ class Autocomplete
 
         if (is_wp_error($response)) {
             do_action('autocomplete_https_request_failure', $response);
-            return array('', '');
+            return array('', $response);
         }
 
         return array($response['headers'], $response['body'], true);
@@ -110,14 +108,71 @@ class Autocomplete
 
     public static function is_response_ok($response, &$body=null)
     {
-       $body = self::get_response_body($response);
+        $body = self::get_response_body($response);
 
-       return array_key_exists( 'status', $body) && $body['status'] == 200;
+        return array_key_exists( 'status', $body) && $body['status'] == 200;
     }
 
-    public static function fetch_account_details()
+    public static function api_fetch_account_details()
     {
         return self::api_call('account', 'GET');
+    }
+
+    public static function api_text_generate($request_data)
+    {
+        return self::api_call('engines/textgen/completion', 'POST', null, $request_data);
+    }
+
+    public static function ajax_text_generate() {
+        $request_data = [
+            'input' => (string)array_get($_POST, 'input'),
+            'output_tokens' => (int)array_get($_POST, 'output_tokens'),
+            'optimize_readability' => (bool)array_get($_POST, 'optimize_readability'),
+            'temperature' => (float)array_get($_POST, 'temperature'),
+        ];
+
+        $validators = [
+            'input' => function ($data) {
+                return !empty($data) && is_string($data);
+            },
+            'output_tokens' => function ($data) {
+                return !empty($data) && is_numeric($data) && $data >= 1 && $data <= 2048;
+            },
+            'optimize_readability' => function ($data) {
+                return !empty($data) && is_bool($data);
+            },
+            'temerature' => function ($data) {
+                return !empty($data) && is_float($data) && $data >= 0.1 && $data <= 1.0;
+            }
+        ];
+
+        $errors = validate_data($request_data, $validators);
+
+        if (!empty($errors)) {
+            return array('', json_encode(['status' => 400, 'message' => implode(', ', $errors)]));
+        }
+
+        $response = self::api_text_generate($request_data);
+
+        $body = self::get_response_body($response);
+
+        echo json_encode($body);
+
+        wp_die();
+    }
+
+    public static function ajax_fetch_account_details() {
+        $response = self::api_fetch_account_details();
+
+        $body = self::get_response_body($response);
+
+        if (isset($body['balance'])) {
+            $body['balance'] = number_format($body['balance']);
+        }
+
+        echo json_encode($body);
+
+        wp_die();
     }
 
     public static function check_key_status($api_key)

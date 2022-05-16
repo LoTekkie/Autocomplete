@@ -1,9 +1,12 @@
 jQuery( function ( $ ) {
-	var urlTextGeneration = '';
+	var ajax;
 
-	/**
-	 * Shows the Enter API key form
-	 */
+	if (typeof ajax_object !== 'undefined') {
+		ajax = ajax_object;
+	}
+
+	updateBalance();
+
 	$( '.autocomplete-enter-api-key-box a' ).on( 'click', function ( e ) {
 		e.preventDefault();
 
@@ -22,9 +25,37 @@ jQuery( function ( $ ) {
 		return swal('AutoComplete Success', msg, 'success');
 	}
 
+	function updateBalance() {
+		if (ajax) {
+			let errMsg = 'Unable to fetch account details.';
+			$.ajax({
+				type: 'POST',
+				url: ajax.ajax_url,
+				data: {
+					'action': 'fetch_account_details',
+				},
+				datatype: 'json',
+				success: function (response) {
+					let data = JSON.parse(response) ?? {};
+					if (data.status && data.status !== 200) {
+						if (data.message) {
+							errMsg = data.message;
+						}
+						return alertError(errMsg);
+					}
+					if (data.balance) {
+						$('#autocomplete-balance').html(data.balance);
+					}
+				}, error: function (response) {
+					alertError(errMsg)
+				},
+			});
+		}
+	}
+
 	function showSpinner()
 	{
-		$('#autocomplete .inside').append('<div id="autocomplete-spinner"><i class="fa fa-refresh fa-spin"></i> Processing...</div>');
+		$('#autocomplete .inside').append('<div id="autocomplete-spinner"><i class="autocomplete-spin"></i>Running job (be patient, complex jobs can take some time)...</div>');
 	}
 
 	function hideSpinner()
@@ -34,9 +65,10 @@ jQuery( function ( $ ) {
 
 	$('#autocomplete-submit').on('click', function ( e ) {
 		e.preventDefault();
+
 		let $paragraph = $('p.wp-block-paragraph').first();
 		let tokens = $('#autocomplete-tokens').val();
-		let temp = $('#autocomplete-temperature').val();
+		let temperature = $('#autocomplete-temperature').val();
 		let readability = $('#autocomplete-readability').is(':checked');
 
 		if (tokens < 1 || tokens > 2048) {
@@ -44,7 +76,7 @@ jQuery( function ( $ ) {
 			return;
 		}
 
-		if (temp > 1.0 || temp < 0.1) {
+		if (temperature > 1.0 || temperature < 0.1) {
 			alertError('Temperature out of range. (0.1 - 1.0)');
 			return;
 		}
@@ -54,28 +86,45 @@ jQuery( function ( $ ) {
 			return;
 		}
 
-        $.ajax({
-            type: 'POST',
-            url: '',
-            data: {
-            },
-            datatype: 'json',
-            beforeSend: function() {
-				showSpinner();
-            },
-			complete: function () {
-				hideSpinner();
-			},
-            success: function (data) {
-
-            }, error: function () {
-
-            },
-        });
+		if (ajax) {
+			let errMsg = 'Oops! Something went wrong...';
+			$.ajax({
+				type: 'POST',
+				url: ajax.ajax_url,
+				data: {
+					'action': 'text_generate',
+					'input': $paragraph.text(),
+					'output_tokens': tokens,
+					'optimize_readability': readability,
+					'temperature': temperature
+				},
+				datatype: 'json',
+				beforeSend: function () {
+					showSpinner();
+				},
+				complete: function () {
+					hideSpinner();
+				},
+				success: function (response) {
+					let data = JSON.parse(response);
+					if (data.status && data.status !== 200) {
+						if (data.message) {
+							errMsg = data.message;
+						}
+						return alertError(errMsg);
+					}
+					console.log(response);
+				}, error: function (response) {
+					alertError(errMsg);
+				},
+			}).then(function () {
+				updateBalance();
+			});
+		}
 	});
+
 	$('#autocomplete .handlediv').html('<span aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="components-panel__arrow" role="img" aria-hidden="true" focusable="false"><path d="M17.5 11.6L12 16l-5.5-4.4.9-1.2L12 14l4.5-3.6 1 1.2z"></path></svg></span>');
 	$('#autocomplete .postbox').addClass('closed');
-
 
 	$('.postbox-header').on('click', function ( e ) {
 		let $path = $('#autocomplete button.handlediv svg path');
@@ -85,5 +134,4 @@ jQuery( function ( $ ) {
 			$path.attr('d', 'M17.5 11.6L12 16l-5.5-4.4.9-1.2L12 14l4.5-3.6 1 1.2z');
 		}
 	});
-
 });
