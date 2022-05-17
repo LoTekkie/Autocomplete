@@ -48,13 +48,13 @@ define( 'AUTOCOMPLETE_EMAIL_SUPPORT', 'help@autocomplete.sh');
 
 require_once(AUTOCOMPLETE_PLUGIN_DIR . 'helpers.php');
 
-register_activation_hook( __FILE__, array( 'autocomplete', 'plugin_activation' ) );
-register_deactivation_hook( __FILE__, array( 'autocomplete', 'plugin_deactivation' ) );
+register_activation_hook( __FILE__, array( 'AutoComplete', 'plugin_activation' ) );
+register_deactivation_hook( __FILE__, array( 'AutoComplete', 'plugin_deactivation' ) );
 
 require_once( AUTOCOMPLETE_PLUGIN_DIR . 'class.autocomplete.php' );
 require_once( AUTOCOMPLETE_PLUGIN_DIR . 'class.autocomplete_metabox.php' );
 
-add_action( 'init', array( 'autocomplete', 'init' ) );
+add_action( 'init', array( 'AutoComplete', 'init' ) );
 
 if ( is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
     require_once( AUTOCOMPLETE_PLUGIN_DIR . 'class.autocomplete_admin.php' );
