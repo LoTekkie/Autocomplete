@@ -159,7 +159,9 @@ jQuery( function ( $ ) {
 					if (data.output.length) {
 						$('#autocomplete-job-input span').html(data.input.trim());
 						$('#autocomplete-job-output span').html(data.output.trim());
-						$block.append('\r\n' + data.output.trim());
+            $('.wp-block-post-title').focus();
+						$block.html(data.combined.trim().replaceAll('\n', '<br data-rich-text-line-break="true">'));
+            $('.is-root-container.block-editor-block-list__layout').click();
 					} else {
 						alertWarning('No output detected. Try adjusting the input and or the number of tokens used. If the problem persists please contact support.');
 					}
