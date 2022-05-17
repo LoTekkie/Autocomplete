@@ -19,7 +19,7 @@ class AutoComplete_Metabox {
                     'class' => 'autocomplete-input number',
                     'label' => 'Tokens',
                     'step' => '1',
-                    'default' => '16',
+                    'default' => '512',
                     'min' => '1',
                     'max' => '2048',
                     'id' => 'autocomplete-tokens',
