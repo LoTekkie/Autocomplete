@@ -98,6 +98,11 @@ jQuery( function ( $ ) {
       $block = $codeBlock
     }
 
+    if (!$block) {
+      alertError('A Paragraph or Code block is required.');
+      return;
+    }
+
     let input = $block.text().trim();
     let tokens = $('#autocomplete-tokens').val();
     let temperature = $('#autocomplete-temperature').val();
@@ -110,11 +115,6 @@ jQuery( function ( $ ) {
 
     if (temperature > 1.0 || temperature < 0.1) {
       alertError('Temperature out of range. (0.1 - 1.0)');
-      return;
-    }
-
-    if (!$block) {
-      alertError('A Paragraph or Code block is required.');
       return;
     }
 
