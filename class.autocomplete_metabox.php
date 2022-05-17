@@ -90,8 +90,17 @@ class AutoComplete_Metabox {
         ?><div class="autocomplete-account-details autocomplete-field-group">
             <label class="autocomplete-label">Balance:</label> <span id="autocomplete-balance">0</span>
         </div><hr class="autocomplete-hr"><?php
+
         $this->number_fields();
+
         $this->fields_div();
+
+        ?><div class="autocomplete-hidden" id="autocomplete-job-output-container">
+            <div id="autocomplete-job-cost">Cost: <span></span></div>
+            <div id="autocomplete-job-input">Input: <span></span></div>
+            <div id="autocomplete-job-output">Output: <span></span></div>
+        </div><?php
+
         printf('</div>');
     }
 

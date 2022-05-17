@@ -58,10 +58,10 @@
                         <?php } ?>
                         <?php wp_nonce_field(AutoComplete_Admin::NONCE) ?>
                         <?php if ( ! AutoComplete::predefined_api_key() ) { ?>
-                        <div id="publishing-action">
-                            <input type="hidden" name="action" value="enter-key">
-                            <input type="submit" name="submit" id="submit" class="autocomplete-button autocomplete-could-be-primary" value="<?php esc_attr_e('Save Changes', 'autocomplete');?>">
-                        </div>
+                            <div id="publishing-action">
+                                <input type="hidden" name="action" value="enter-key">
+                                <input type="submit" name="submit" id="submit" class="autocomplete-button autocomplete-could-be-primary" value="<?php esc_attr_e('Save Changes', 'autocomplete');?>">
+                            </div>
                         <?php } ?>
                         <div class="clear"></div>
                     </div>
@@ -77,14 +77,14 @@
                 </div>
             </div>
             <div class="inside">
-              <div class="autocomplete-account-details">
-                <?php if ( isset($details['username']) ) { ?>
-                  <p><?php esc_html_e( 'Username' , 'autocomplete'); ?>: <?php echo ucwords($details['username']) ?></p>
-                <?php } ?>
-                <?php if ( isset($details['balance']) ) { ?>
-                   <p><?php esc_html_e( 'Balance' , 'autocomplete'); ?>: <?php echo number_format($details['balance']) ?></p>
-                <?php } ?>
-              </div>
+                <div class="autocomplete-account-details">
+                    <?php if ( isset($details['username']) ) { ?>
+                        <p><?php esc_html_e( 'Username' , 'autocomplete'); ?>: <?php echo ucwords($details['username']) ?></p>
+                    <?php } ?>
+                    <?php if ( isset($details['balance']) ) { ?>
+                        <p><?php esc_html_e( 'Balance' , 'autocomplete'); ?>: <?php echo number_format($details['balance']) ?></p>
+                    <?php } ?>
+                </div>
             </div>
         </div>
 
@@ -96,9 +96,42 @@
                 </div>
             </div>
             <div class="inside">
-              <div class="">
+                <div class="autocomplete-examples">
+                    <div class="autocomplete-example">
+                        <ul style="margin-top:0;">
+                            <li>Select "Posts" from the left side nav menu.</li>
+                            <li>Choose to create a new post or edit an existing one.</li>
+                        </ul>
+                        <?php printf('<img src="%s" class="autocomplete-example-image">', plugins_url( '../_inc/img/example_1.png', __FILE__ )); ?>
+                    </div>
+                    <hr>
+                    <div class="autocomplete-example">
+                        <ul>
+                            <li>While editing a post, ensure the settings are visible by clicking the gear icon in the top right.</li>
+                            <li>Select Post settings and scroll down until you see the AutoComplete section.</li>
+                        </ul>
+                        <?php printf('<img src="%s" class="autocomplete-example-image">', plugins_url( '../_inc/img/example_2.png', __FILE__ )); ?>
+                    </div>
+                    <hr>
+                    <div class="autocomplete-example">
+                        <ul>
+                            <li>Ensure you have at least one paragraph or code block in the post body.</li>
+                            <li>Enter some text in the block.</li>
+                            <li>Choose your AutoComplete settings and click the submit button.</li>
+                        </ul>
+                        <?php printf('<img src="%s" class="autocomplete-example-image">', plugins_url( '../_inc/img/example_3.png', __FILE__ )); ?>
+                    </div>
+                    <hr>
+                    <div class="autocomplete-example">
+                        <ul>
+                            <li>Scroll down in the settings to view the cost, input, and output of the last run job.</li>
+                            <li>Optionally click the input and output sections to copy them to the clipboard.</li>
+                            <li>Enjoy your auto-completed content!</li>
+                        </ul>
+                        <?php printf('<img src="%s" class="autocomplete-example-image">', plugins_url( '../_inc/img/example_4.png', __FILE__ )); ?>
+                    </div>
 
-              </div>
+                </div>
             </div>
         </div>
 

@@ -17,12 +17,26 @@ jQuery( function ( $ ) {
 		$( this ).hide();
 	} );
 
+	$( '#autocomplete-job-output').on('click', function ( e ) {
+		copyToClipboard($('#autocomplete-job-output span').html());
+		alertSuccess('Job output copied to clipboard!');
+	});
+
+	$( '#autocomplete-job-input').on('click', function ( e ) {
+		copyToClipboard($('#autocomplete-job-input span').html());
+		alertSuccess('Job input copied to clipboard!');
+	});
+
 	function alertError(msg='') {
 		return swal("AutoComplete Error", msg, "error");
 	}
 
 	function alertSuccess(msg ='') {
 		return swal('AutoComplete Success', msg, 'success');
+	}
+
+	function alertWarning(msg='') {
+		return swal('AutoComplete Warning', msg, 'warning');
 	}
 
 	function updateBalance() {
@@ -55,7 +69,7 @@ jQuery( function ( $ ) {
 
 	function showSpinner()
 	{
-		$('#autocomplete .inside').append('<div id="autocomplete-spinner"><i class="autocomplete-spin"></i>Running job (be patient, complex jobs can take some time)...</div>');
+		$('#autocomplete .inside').prepend('<div id="autocomplete-spinner"><i class="autocomplete-spin"></i><span>Running job (be patient, complex jobs can take some time)...</span></div>');
 	}
 
 	function hideSpinner()
@@ -63,10 +77,28 @@ jQuery( function ( $ ) {
 		$('#autocomplete-spinner').remove();
 	}
 
+	function copyToClipboard(text) {
+		let $temp = $("<input>");
+		$("body").append($temp);
+		$temp.val(text).select();
+		document.execCommand("copy");
+		$temp.remove();
+	}
+
 	$('#autocomplete-submit').on('click', function ( e ) {
 		e.preventDefault();
 
-		let $paragraph = $('p.wp-block-paragraph').first();
+		let $block;
+		let $paragraphBlock = $('.is-root-container  p[role="document"]').first();
+		let $codeBlock = $('.is-root-container code[role="textbox"]').first();
+
+		if ($paragraphBlock.length) {
+			$block = $paragraphBlock;
+		} else if($codeBlock.length) {
+			$block = $codeBlock
+		}
+
+		let input = $block.text().trim();
 		let tokens = $('#autocomplete-tokens').val();
 		let temperature = $('#autocomplete-temperature').val();
 		let readability = $('#autocomplete-readability').is(':checked');
@@ -81,8 +113,13 @@ jQuery( function ( $ ) {
 			return;
 		}
 
-		if (!$paragraph.text()) {
-			alertError('A Paragraph is required.');
+		if (!$block) {
+			alertError('A Paragraph or Code block is required.');
+			return;
+		}
+
+		if (!input.length) {
+			alertError('You must type something in your Paragraph or Code block.');
 			return;
 		}
 
@@ -93,13 +130,14 @@ jQuery( function ( $ ) {
 				url: ajax.ajax_url,
 				data: {
 					'action': 'text_generate',
-					'input': $paragraph.text(),
+					'input': input,
 					'output_tokens': tokens,
 					'optimize_readability': readability,
 					'temperature': temperature
 				},
 				datatype: 'json',
 				beforeSend: function () {
+					$('#autocomplete-job-output-container').addClass('autocomplete-hidden');
 					showSpinner();
 				},
 				complete: function () {
@@ -113,7 +151,20 @@ jQuery( function ( $ ) {
 						}
 						return alertError(errMsg);
 					}
-					console.log(response);
+
+					let cost = data.cost ?? 0;
+
+					$('#autocomplete-job-cost span').html(cost);
+
+					if (data.output.length) {
+						$('#autocomplete-job-input span').html(data.input.trim());
+						$('#autocomplete-job-output span').html(data.output.trim());
+						$block.append('\r\n' + data.output.trim());
+					} else {
+						alertWarning('No output detected. Try adjusting the input and or the number of tokens used. If the problem persists please contact support.');
+					}
+
+					$('#autocomplete-job-output-container').removeClass('autocomplete-hidden');
 				}, error: function (response) {
 					alertError(errMsg);
 				},
