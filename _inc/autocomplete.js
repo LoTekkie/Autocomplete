@@ -57,7 +57,8 @@ jQuery( function ( $ ) {
             }
             return alertError(errMsg);
           }
-          if (data.balance) {
+          if (data.username) {
+            $('#autocomplete-username').html(data.username);
             $('#autocomplete-balance').html(data.balance);
           }
         }, error: function (response) {
@@ -88,22 +89,17 @@ jQuery( function ( $ ) {
   $('#autocomplete-submit').on('click', function ( e ) {
     e.preventDefault();
 
-    let $block;
-    let $paragraphBlock = $('.is-root-container  p[role="document"]').first();
-    let $codeBlock = $('.is-root-container code[role="textbox"]').first();
+    var input = "";
+    $('.is-root-container  p[role="document"]').each(function(k,v) {
+      input = input + v.innerText + "\n";
+    });
 
-    if ($paragraphBlock.length) {
-      $block = $paragraphBlock;
-    } else if($codeBlock.length) {
-      $block = $codeBlock
-    }
-
-    if (!$block) {
-      alertError('A Paragraph or Code block is required.');
+    if (input.length < 1) {
+      alertError('A Paragraph block is required.');
       return;
     }
 
-    let input = $block.text().trim();
+    input = input.trim();
     let tokens = $('#autocomplete-tokens').val();
     let temperature = $('#autocomplete-temperature').val();
     let readability = $('#autocomplete-readability').is(':checked');

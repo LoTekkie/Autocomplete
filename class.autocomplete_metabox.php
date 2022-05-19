@@ -87,8 +87,9 @@ class AutoComplete_Metabox {
     }
 
     public function add_meta_box_callback() { //form tag not allowed here..
-        ?><div class="autocomplete-account-details autocomplete-field-group">
-            <label class="autocomplete-label">Balance:</label> <span id="autocomplete-balance">0</span>
+        ?><div class="autocomplete-account-details autocomplete-field-group" style="flex-direction: column;">
+            <div class="autocomplete-label">Username:</label> <span id="autocomplete-username">null</div>
+            <div class="autocomplete-label">Balance:</label> <span id="autocomplete-balance">0</div>
         </div><hr class="autocomplete-hr"><?php
 
         $this->number_fields();
