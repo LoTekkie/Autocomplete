@@ -79,7 +79,7 @@
             <div class="inside">
                 <div class="autocomplete-account-details">
                     <?php if ( isset($details['username']) ) { ?>
-                        <p><?php esc_html_e( 'Username' , 'autocomplete'); ?>: <?php echo ucwords($details['username']) ?></p>
+                        <p><?php esc_html_e( 'Username' , 'autocomplete'); ?>: <?php echo $details['username'] ?></p>
                     <?php } ?>
                     <?php if ( isset($details['balance']) ) { ?>
                         <p><?php esc_html_e( 'Balance' , 'autocomplete'); ?>: <?php echo number_format($details['balance']) ?></p>

@@ -156,12 +156,18 @@ jQuery( function ( $ ) {
 
           $('#autocomplete-job-cost span').html(cost);
 
-          if (data.output.length) {
+          let output = data.output.replace(/\\/g,"").trim();
+          if (output.length > 0) {
+            let combined = data.combined.replace(/\\/g,"").trim();
             $('#autocomplete-job-input span').html(data.input.trim());
             $('#autocomplete-job-output span').html(data.output.trim());
-            $('.wp-block-post-title').focus();
-            $block.html(data.combined.trim().replaceAll('\n', '<br data-rich-text-line-break="true">'));
-            $('.is-root-container.block-editor-block-list__layout').click();
+            /*
+             * TODO: automatically insert into post body
+              $('.wp-block-post-title').focus();
+              $block.html(combined.trim().replaceAll('\n', '<br data-rich-text-line-break="true">'));
+              $('.is-root-container.block-editor-block-list__layout').click();
+            */
+            alertSuccess(combined);
           } else {
             alertWarning('No output detected. Try adjusting the input and or the number of tokens used. If the problem persists please contact support.');
           }
