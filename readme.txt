@@ -1,7 +1,7 @@
 === Plugin Name ===
 Contributors: // TODO: Contributors is a comma separated list of wordpress.org usernames
 Tags: autocomplete, AI writing, text generation, NLP, machine learning, AI
-Requires at least: 5.0 // TODO: test older versions
+Requires at least: 5.9.0
 Tested up to: 5.9.3
 Stable tag: // TODO: Stable tag must indicate the Subversion "tag" of the latest stable version
 Requires PHP: 7.0 // TODO: test PHP version
