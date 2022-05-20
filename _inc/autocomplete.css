@@ -1016,3 +1016,8 @@ input.autocomplete-input.checkbox:checked:before {
         -webkit-transform: rotate(360deg);
     }
 }
+
+.swal-modal {
+    width: 80%;
+    max-width: 1600px;
+}

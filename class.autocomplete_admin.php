@@ -117,7 +117,7 @@ class AutoComplete_Admin {
                         'content'	=>
                             '<p><strong>' . esc_html__( 'AutoComplete Setup' , 'autocomplete') . '</strong></p>' .
                             '<p>' . esc_html__( 'You need to enter an Autocomplete API key to make use of this plugin on your site.' , 'autocomplete') . '</p>' .
-                            '<p>' . sprintf( __( 'Sign up for an account on %s to get an API Key.' , 'autocomplete'), '<a href="' . autocomplete_url() . '" target="_blank">' .autocomplete_url().'</a>' ) . '</p>',
+                            '<p>' . sprintf( __( '%s to get an API Key.' , 'autocomplete'), '<a href="' . autocomplete_url('signup') . '" target="_blank">Sign up for an account</a>' ) . '</p>',
                     )
                 );
 
@@ -130,7 +130,7 @@ class AutoComplete_Admin {
                             '<p>' . esc_html__( 'If you already have an API key' , 'autocomplete') . '</p>' .
                             '<ol>' .
                             '<li>' . esc_html__( 'Copy and paste the API key into the text field.' , 'autocomplete') . '</li>' .
-                            '<li>' . esc_html__( 'Click the Use this Key button.' , 'autocomplete') . '</li>' .
+                            '<li>' . esc_html__( 'Click the \'Use this key\' button.' , 'autocomplete') . '</li>' .
                             '</ol>',
                     )
                 );
@@ -163,8 +163,8 @@ class AutoComplete_Admin {
 
         $current_screen->set_help_sidebar(
             '<p><strong>' . esc_html__( 'For more information:' , 'autocomplete') . '</strong></p>' .
-            '<p><a href="' . autocomplete_url('documentation#faq') . '" target="_blank">'     . esc_html__( 'AutoComplete FAQ' , 'autocomplete') . '</a></p>' .
-            '<p><a href="mailto:' . constant('AUTOCOMPLETE_EMAIL_SUPPORT') .'" target="_blank">' . esc_html__( 'AutoComplete Support' , 'autocomplete') . '</a></p>'
+            '<p><a href="' . autocomplete_url('documentation') . '" target="_blank">'     . esc_html__( 'Documentation' , 'autocomplete') . '</a></p>' .
+            '<p><a href="mailto:' . constant('AUTOCOMPLETE_EMAIL_SUPPORT') .'" target="_blank">' . esc_html__( 'Support' , 'autocomplete') . '</a></p>'
         );
     }
 

@@ -9,7 +9,13 @@ if (!function_exists('autocomplete_url')) {
      */
     function autocomplete_url($relative_path='', $api=false) {
         $url = $api ? constant("AUTOCOMPLETE_URL_API") : constant('AUTOCOMPLETE_URL');
-        return $url . '/' . ltrim($relative_path, '\/');
+        $url = $url . '/' . ltrim($relative_path, '\/');
+        if (str_contains($url, '#')) {
+          $url = str_replace('#', constant('AUTOCOMPLETE_ATTRIBUTION') . '#', $url);
+        } else {
+          $url = $url . constant('AUTOCOMPLETE_ATTRIBUTION');
+        }
+        return $url;
     }
 }
 

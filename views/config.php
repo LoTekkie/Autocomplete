@@ -124,8 +124,8 @@
                     <hr>
                     <div class="autocomplete-example">
                         <ul>
+                            <li>Copy the output to your clipboard and paste it into your post.</li>
                             <li>Scroll down in the settings to view the cost, input, and output of the last run job.</li>
-                            <li>Optionally click the input and output sections to copy them to the clipboard.</li>
                             <li>Enjoy your auto-completed content!</li>
                         </ul>
                         <?php printf('<img src="%s" class="autocomplete-example-image">', plugins_url( '../_inc/img/example_4.png', __FILE__ )); ?>

@@ -12,7 +12,7 @@
       <input type="hidden" name="action" value="enter-key">
       <div style="display:flex;flex-flow: row nowrap;justify-content:space-between;align-items:center;padding:0 15px">
         <input id="key" name="key" type="text" size="15" value="<?php AutoComplete::get_api_key() ?? '' ?>" placeholder="<?php esc_attr_e( 'Enter your AutoComplete API Key' , 'autocomplete' ); ?>" class="regular-text code" style="flex-grow: 1; margin-right: 1rem;">
-        <input type="submit" name="submit" id="submit" class="autocomplete-button"  value="<?php esc_attr_e( 'Use this Key', 'autocomplete' );?>">
+        <input type="submit" name="submit" id="submit" class="autocomplete-button"  value="<?php esc_attr_e( 'Use this key', 'autocomplete' );?>">
       </div>
     </form>
   </div>
