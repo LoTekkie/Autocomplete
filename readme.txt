@@ -10,6 +10,13 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Here is a short description of the plugin.  This should be no more than 150 characters.  No markup here.
 
+
+# AutoComplete.sh
+
+## AI Content Generation
+
+[![AutoComplete.sh Preview](https://i.imgur.com/ErTKYYV.png)](https://imgur.com/a/4vCa0E0)
+
 == Description ==
 
 [AutoComplete.sh](https://autocomplete.sh/?r=wordpress&readme&crs=1653009082) allows you to automatically generate blog content and work with intelligent machine learning NLP text generation models.
@@ -62,12 +69,6 @@ Visit our website at [https://autocomplete.sh](https://autocomplete.sh/?r=wordpr
 Check out the [demo examples](https://autocomplete.sh/?r=wordpress&readme&crs=1653009082#demo) on our home page or leave a comment in this thread to request trial credits.
 
 For any other questions, feel free to leave us a message here or contact our support team at [help@autocomplete.sh](mailto:help@autocomplete.sh).
-
-// TODO: screenshots
-== Screenshots ==
-
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Screenshots are stored in the /assets directory.
-2. This is the second screen shot
 
 == Changelog ==
 
